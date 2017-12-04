@@ -1,0 +1,27 @@
+{
+   "name": "weak-daemon",
+   "version": "1.0.0",
+   "description": "Object wrapper for unref'ed setInterval",
+   "main": "lib/weak-daemon.js",
+   "directories": {
+      "lib": "lib",
+      "test": "test"
+   },
+   "scripts": {
+      "test": "node test/test-weak-daemon"
+   },
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/fider/weak-daemon"
+   },
+   "keywords": [
+      "weak",
+      "daemon"
+   ],
+   "dependencies": {},
+   "engines": {
+      "node": ">=0.9.1"
+   },
+   "author": "Wojciech Fiderek",
+   "license": "MIT"
+}
