@@ -1,19 +1,47 @@
-# WeakDaemon
-Node.js object wrapper for unref'ed setInterval.
+- [About](#about)
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Examples](#examples)
+- [To do](#to-do)
 
-It will not prevent Node.js process to exit if event loop is empty.
+# About
+- Node.js object wrapper for unref'ed setInterval.
+- It will **not** prevent Node.js process to exit if event loop is empty.
+- It will help you remember about routine context.
+- No external dependencies.
 
-It will help you remember about routine context.
-
-No external dependencies.
 # Installation
 Requires [Node.js](https://nodejs.org/) v0.9.1+
 ```sh
 $ npm install weak-daemon
 ```
 
-# Usage
-Ordinary function:
+# Documentation
+
+### class `WeakDaemon`
+
+
+- ##### `constructor( interval, task, caller[, task_args] )`
+  ###### Arguments:
+  - `interval` - interval time of task call in milliseconds. Note this is not guarntee to call task every `interval`, it works exactly the same as `setInterval` unref
+  - `task` - function that will be called every `interval`
+  - `caller` - `task's` caller context (in case if task will use 'this' keyword)
+  - `[task_args]` - Optional. Parameters of task. Array.
+
+- ##### `start( immediate_call )`
+  Start daemon.
+  ###### Arguments:
+  - `immediate_call` - boolean, is task should be called immediately after start call. Default false.
+
+- ##### `stop()`
+  Stop daemon (can be resterted by calling `start`).
+
+- ##### `isRunning()`
+  ###### Returns:
+  - boolean, is daemon running
+
+# Examples
+- Ordinary function:
 ```node.js
 const WeakDaemon = require('weak-daemon').WeakDaemon
 
@@ -42,7 +70,7 @@ var daemon = new WeakDaemon(
 );
 ```
 
-Function that requires a caller context, because of `this` usage:
+- Function that requires a caller context, because of `this` usage:
 ```node.js
 const WeakDaemon = require('weak-daemon').WeakDaemon
 
@@ -62,7 +90,7 @@ var daemon = new WeakDaemon(
 daemon.start();
 ```
 
-Example error scenario:
+- Example error scenario:
 ```node.js
 const WeakDaemon = require('weak-daemon').WeakDaemon
 
@@ -84,3 +112,6 @@ var daemon = new WeakDaemon(
 daemon.start();
 /* Error - `this.source` is undefined */
 ```
+
+## To do
+Rewrite tests using Mocha
