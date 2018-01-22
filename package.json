@@ -2,7 +2,7 @@
    "name": "weak-daemon",
    "version": "1.0.0",
    "description": "Object wrapper for unref'ed setInterval",
-   "main": "lib/weak-daemon.js",
+   "main": "index.js",
    "directories": {
       "lib": "lib",
       "test": "test"

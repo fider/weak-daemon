@@ -1,5 +1,10 @@
 const assert = require('assert')
-const WeakDaemon = require('../lib/weak-daemon').WeakDaemon;
+const {getClass, getInstance} = require('../index');
+
+const WeakDaemon = getClass();
+const weak_daemon = getInstance(1, ()=>{}, null);
+
+assert(weak_daemon instanceof WeakDaemon, `weak_daemon should be instaceof WeakDaemon`)
 
 
 const MAX_INTERVAL = 0x7FFFFFFF;
@@ -13,7 +18,7 @@ var d = null;
 
 // ------------------------------------------------------------------
 // [TC] Is `new` used
-assert.throws(WeakDaemon, TypeError);
+assert.throws(()=>{WeakDaemon()}, TypeError);
 
 
 
