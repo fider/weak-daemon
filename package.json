@@ -1,27 +1,31 @@
 {
-   "name": "weak-daemon",
-   "version": "1.0.0",
-   "description": "Object wrapper for unref'ed setInterval",
-   "main": "index.js",
-   "directories": {
-      "lib": "lib",
-      "test": "test"
-   },
-   "scripts": {
-      "test": "node test/test-weak-daemon"
-   },
-   "repository": {
-      "type": "git",
-      "url": "https://github.com/fider/weak-daemon"
-   },
-   "keywords": [
-      "weak",
-      "daemon"
-   ],
-   "dependencies": {},
-   "engines": {
-      "node": ">=0.9.1"
-   },
-   "author": "Wojciech Fiderek",
-   "license": "MIT"
+  "name": "weak-daemon",
+  "version": "1.0.0",
+  "description": "Object wrapper for unref'ed setInterval",
+  "main": "dist/index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "tsc",
+    "test": "tsc && jasmine-ts \"test/**/*\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fider/weak-daemon"
+  },
+  "keywords": [
+    "weak",
+    "daemon"
+  ],
+  "dependencies": {},
+  "engines": {
+    "node": ">=0.9.1"
+  },
+  "author": "Wojciech Fiderek",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jasmine": "^2.8.6",
+    "jasmine-ts": "^0.2.1"
+  }
 }
