@@ -159,6 +159,15 @@ describe('Unit test weak-daemon:', function() {
         expect(TASK.recent_args[2]).toBe(TASK.input_args[2]);
     });
 
+
+    
+// TODO check jasmine.clock to handle timing and trigger timeout:
+// https://makandracards.com/makandra/32477-testing-settimeout-and-setinterval-with-jasmine
+
+
+
+
+
     // it('WeakDaemon.start( false )', function() {
     //     spyOn(global, 'setInterval').and.callThrough();
     //     spyOn(weak_daemon, '_task').and.callThrough();
