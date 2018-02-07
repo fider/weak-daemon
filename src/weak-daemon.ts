@@ -25,9 +25,9 @@ export class WeakDaemon {
     
     /**
      * @param {number}      interval_time
-     * @param {null|Object} caller             Object if param `task` uses `this` keyword ELSE set null
-     * @param {function}    task                     callback, task
-     * @param {Array}       [task_arguments_array]
+     * @param {null|Object} caller - Object if param `task` uses `this` keyword ELSE set null
+     * @param {function}    task - callback, task
+     * @param {Array}       [task_arguments_array=[]]
      *
      * @throws {TypeError} If you do not like this just do not use this module
      */
@@ -49,9 +49,10 @@ export class WeakDaemon {
 
     
     /**
-     * Immediate call + setInterval
+     * @param {boolean} [immediate_call=false] - should first call of task be done without delay
+     * @throws {Error} if multiple start() called without previous stop() call
      */
-    start(immediate_call = false) : void {
+    start(immediate_call:boolean = false) : void {
         if( this._interval_id ) {
             throw new Error(`
                 Potential error detected:
@@ -63,14 +64,15 @@ export class WeakDaemon {
         }
 
 
-        this._interval_id = <any>setInterval(
-            this._task.bind(this._caller, ...this._args),
-            this._interval_time);
+        this._interval_id = <any>setInterval( () => {
+            this._task.apply(this._caller, this._args)
+        }, this._interval_time);
 
         this._interval_id.unref();
         
-        if( immediate_call === true ) {
-            this._task.call(this._caller, ...this._args);
+        if( immediate_call == true ) {
+            // Do not use spread operator to support older version of Node.js
+            this._task.apply(this._caller, this._args);
         }
     }
 
@@ -114,10 +116,10 @@ export class WeakDaemon {
 
     /**
      * @private
-     * @param {number}      interval_time               0 < Integer <= 0x7FFFFFFF (max setInterval delay)
-     * @param {null|Object} caller             Object if param `task` uses `this` keyword ELSE set null
-     * @param {function}    task                     function
-     * @param {Array}       [task_arguments_array]   optional array of arguments that task function will use
+     * @param {number}      interval_time - 0 < Integer <= 0x7FFFFFFF (max setInterval delay)
+     * @param {null|Object} caller - if `task` uses `this` keyword THEN Object ELSE null
+     * @param {function}    task
+     * @param {Array}       [task_arguments_array=[]] - array of arguments applied to task
      *
      * @throws {TypeError} If you do not like this just do not use this module
      */
