@@ -1,4 +1,10 @@
 src/
 test/
-.gitignore
 node_modules/
+# .map files from .lib
+**/*.map
+
+tsconfig.json
+.gitignore
+# Otherwise it will be published
+.npmignore

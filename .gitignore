@@ -1,4 +1,6 @@
-dist/
+lib/
+types/
+
 
 # Logs
 logs

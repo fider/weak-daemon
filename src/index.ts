@@ -11,7 +11,6 @@ function getClass(): typeof WeakDaemon {
     return WeakDaemon;
 };
 
-
 export {getInstance};
 export {getClass};
 export {WeakDaemon};

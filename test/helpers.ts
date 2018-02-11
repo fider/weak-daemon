@@ -1,5 +1,4 @@
-import {WeakDaemon} from '../dist/index'
-
+import {WeakDaemon} from '../lib/index'
 
 
 export interface iTask {

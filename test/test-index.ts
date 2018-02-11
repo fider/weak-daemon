@@ -1,4 +1,5 @@
-import {WeakDaemon, getInstance, getClass} from '../dist/index';
+// '../../weak-daemon'  =>  leave it like this to test module interface
+import {WeakDaemon, getInstance, getClass} from '../../weak-daemon';
 
 /*+--------------------------------------------------------------------------+
   | ! Spy on WeakDaemon's task will not be good solution in this case        |

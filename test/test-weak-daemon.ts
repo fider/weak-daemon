@@ -1,4 +1,4 @@
-import {WeakDaemon} from '../dist/weak-daemon.js';
+import {WeakDaemon} from '../lib/weak-daemon';
 const {inspect: i} = require('util');
 import {createTask, iTask, NotTypedWeakDaemon, TestableWeakDaemon} from './helpers';
 
