@@ -78,7 +78,7 @@ daemon.start();
 ```
 
 - Example error scenario:
-```node.js
+```js
 const worker = {
   data: {},
   source: {...},
