@@ -71,8 +71,4 @@ describe('weak-daemon', function() {
         
     });
 
-    it('SHOULD NOT ALLOW TO PUBLISH MODULE !!', function() {
-        expect(1).toBe(0);
-    });
-
 });
