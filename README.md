@@ -1,32 +1,147 @@
 - [About](#about)
 - [Installation](#installation)
-- [Documentation](#documentation)
 - [Examples](#examples)
-- [To do](#to-do)
+  - [Usage](#examples)
+  - [Mocking](#mocking-for-test-purposes)
+- [Documentation](#documentation)
 
 # About
 - Node.js object wrapper for unref'ed setInterval.
-- It will **not** prevent Node.js process to exit if event loop is empty.
+- **weak** means it will **not** prevent Node.js process to exit if event loop is empty.
 - It will help you remember about routine context.
 - No external dependencies.
 
 # Installation
-Requires [Node.js](https://nodejs.org/) v0.9.1+
+Requires [Node.js](https://nodejs.org/) v4.8.7
 ```sh
 $ npm install weak-daemon
+```
+
+# Examples
+
+- Ordinary function:
+```js
+const WeakDaemon = require('weak-daemon').WeakDaemon
+                                         
+var daemon = new WeakDaemon(             
+  102,                                   
+  null,                                  
+  () => { console.log('tick', 'tock') }  
+);                                       
+                                         
+daemon.start(); // Will print 'tick' 'tock' every ~102 ms
+
+..
+
+/* (!) Note that multiple 'start' call without previous 'stop' will throw error */
+daemon.start();     // First call made after ~102ms
+daemon.start(false);// First call made after ~102ms
+daemon.start(true); // First call made immediately;
+
+..
+
+daemon.start();
+daemon.isRunning(); // true
+daemon.stop();
+daemon.isRunning(); // false
+daemon.start();
+```
+
+- Equivalent of above example
+```js
+var daemon = new WeakDaemon(
+  102,
+  null,
+  console.log,
+  ['tick', 'tock']
+);
+```
+
+
+- Function that requires a caller context, because of `this` usage:
+```js
+const worker = {
+  data: {},
+  updateData(source) {
+    this.data = source.data;
+  } 
+}
+
+var daemon = new WeakDaemon(
+  102,
+  worker,             /* So `this` will be handled properly on `updateData` call */
+  worker.updateData,
+  [data_source]
+);
+
+daemon.start();
+```
+
+- Example error scenario:
+```node.js
+const worker = {
+  data: {},
+  source: {...},
+  
+  updateData() {
+    this.data = this.source.data()
+  }
+}
+
+var daemon = new WeakDaemon(
+  101,
+  null,               /* `this.source` will be undefined while daemon will call `updateData` */
+  worker.updateData
+);
+
+/* Error - `this.source` is undefined */
+daemon.start();
+```
+
+## Mocking for test purposes:
+```js
+/* your-lib.js */
+const {getInstance} = require('weak-daemon');
+
+// :(
+const non_mockable_daemon = new WeakDaemon(...args);
+
+// :)
+const mockable_daemon = getInstance(...args);
+```
+```js
+/* test-your-lib.js */
+const WD = require('weak-daemon');
+
+WD.getInstance = () => { return your_mock; }
+```
+Alternative way:
+```js
+/* your-lib.js */
+const {WeakDaemon, getClass} = require('weak-daemon');
+
+const non_mockable_daemon = new WeakDaemon(...args)
+
+const MockableWeakDaemon = getClass();
+const mockable_daemon = new MockableWeakDaemon(...args);
+```
+```js
+/* test-your-lib.js */
+const WD = require('weak-daemon');
+
+WD.getClass = () => { return YourMock; }
 ```
 
 # Documentation
 
 ### class `WeakDaemon`
 
-
-- ##### `constructor( interval, task, caller[, task_args] )`
+- ##### `constructor( interval_time, caller, task, task_args=[] )`
   ###### Arguments:
-  - `interval` - interval time of task call in milliseconds. Note this is not guarntee to call task every `interval`, it works exactly the same as `setInterval` unref
-  - `task` - function that will be called every `interval`
-  - `caller` - `task's` caller context (in case if task will use 'this' keyword)
-  - `[task_args]` - Optional. Parameters of task. Array.
+  - `interval` integer number - interval time of task call in milliseconds. Note this is not guarntee to call task every interval, it works exactly the same as `setInterval(..).unref()`
+  - `caller` object | null - `task's` caller context (in case if task will use 'this' keyword)
+  - `task` function - task that will be called every `interval`
+  - `[task_args]` Array<any> - list of arguments task will be called with.
 
 - ##### `start( immediate_call )`
   Start daemon.
@@ -40,78 +155,17 @@ $ npm install weak-daemon
   ###### Returns:
   - boolean, is daemon running
 
-# Examples
-- Ordinary function:
-```node.js
-const WeakDaemon = require('weak-daemon').WeakDaemon
+- ##### `interval` getter for provided `interval_time`
+- ##### `caller` getter for provided `caller`
+- ##### `task` getter for provided `task`
+- ##### `args` getter for provided `args` ([] returned if not provided])
 
-function task() { /* do something */ }
+### function `getInstance`
+Provided for mocking purposes.
+- ###### Arguments: @see class `WeakDaemon` constructor
+- ###### Returns: instance of WeakDaemon.
 
-var daemon = new WeakDaemon(
-  101,  /* Interval milliseconds */
-  task, /* function that will be called every 101ms */
-  null  /* `task` context - mandatory parameter, to ensure you are aware of call context */
-);
-
-/* First `task` call is made after ~101ms */
-daemon.start();
-..
-daemon.stop();
-..
-/* First `task` call is made immediately */
-daemon.start(true);
-..
-/* Provide parameters to task */
-var daemon = new WeakDaemon(
-  101,
-  task,
-  null,
-  [arg_1, arg_2]
-);
-```
-
-- Function that requires a caller context, because of `this` usage:
-```node.js
-const WeakDaemon = require('weak-daemon').WeakDaemon
-
-const worker = {
-  data: {},
-  updateData: ()=>{
-    this.data = ...
-  } 
-}
-
-var daemon = new WeakDaemon(
-  101,
-  worker.updateData,
-  worker /* So `this` will be handled properly on `updateData` call */
-);
-
-daemon.start();
-```
-
-- Example error scenario:
-```node.js
-const WeakDaemon = require('weak-daemon').WeakDaemon
-
-const worker = {
-  data: {},
-  source: {...},
-  
-  updateData: ()=>{
-    this.data = this.source.data()
-  }
-}
-
-var daemon = new WeakDaemon(
-  101,
-  worker.updateData,
-  null               /* `this.source` will be undefined while daemon will call `updateData` */
-);
-
-daemon.start();
-/* Error - `this.source` is undefined */
-```
-
-## To do
-Rewrite tests using Mocha
+### function `getClass`
+Provided for mocking purposes.
+- ###### Arguments: no
+- ###### Returns: WeakDaemon class.
